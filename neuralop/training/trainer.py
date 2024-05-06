@@ -88,6 +88,7 @@ class Trainer:
         self.device = device
         self.amp_autocast = amp_autocast
         self.data_processor = data_processor
+        print("\n### Trainer class constructor ###\n", model)
 
         if self.callbacks:
             self.callbacks.on_init_end(
@@ -147,8 +148,11 @@ class Trainer:
             eval_losses = dict(l2=training_loss)
 
         errors = None
-
+        
         for epoch in range(self.n_epochs):
+            
+            print(f"### epoch={epoch} ### \n")
+            
             if self.callbacks:
                 self.callbacks.on_epoch_start(epoch=epoch)
 
@@ -210,6 +214,9 @@ class Trainer:
 
                 if regularizer:
                     loss += regularizer.loss
+                
+                # added by atif following https://forums.fast.ai/t/pytorch-gradient-runtimeerror/99118
+                loss = loss.sum()
 
                 loss.backward()
                 del out
@@ -234,6 +241,8 @@ class Trainer:
 
             train_err /= len(train_loader)
             avg_loss /= n_samples
+
+            print(f"train_err = {train_err} avg_loss = {avg_loss} \n")
 
             if epoch % self.log_test_interval == 0:
                 if self.callbacks:

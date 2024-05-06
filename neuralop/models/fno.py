@@ -243,6 +243,7 @@ class FNO(BaseModel, name='FNO'):
             output_shape = [None]*self.n_layers
         elif isinstance(output_shape, tuple):
             output_shape = [None]*(self.n_layers - 1) + [output_shape]
+        #print(f"output shape is {output_shape}, x shape is {x.shape}")
 
         x = self.lifting(x)
 

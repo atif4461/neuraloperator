@@ -26,12 +26,12 @@ import inspect
 
 device = torch.device('cuda')
 
-ntrain = 1000
-ntest = 100
+ntrain = 1024
+ntest = 128
 resolution=64
 batch_size=32
 T_in = 10
-T = 1
+T = 10
 
 # %%
 # Loading the Navier-Stokes dataset in 128x128 resolution
@@ -49,13 +49,14 @@ width = 40
 scheduler_step = 100
 scheduler_gamma = 0.5
 learning_rate = 0.001
-epochs = 501
+epochs = 51
 
 # %%
 # We create a tensorized FNO model
 # I think channel_dim is for number of inputs --  1 for vorticity, 2 for velocity in 2D and 3 for both in 3D
 # or is it like each T_in is a separate channel?
-model = FNO(n_modes=(8, 8, 8), hidden_channels=width, in_channels=T_in, out_channels=T)
+#model = FNO(n_modes=(8, 8, 8), hidden_channels=width, in_channels=T_in, out_channels=T)
+model = FNO(n_modes=(8, 8, 8), hidden_channels=width, in_channels=1, out_channels=1, T_in=T_in, T_out=T)
 #model = TFNO(n_modes=(16, 16), hidden_channels=32, projection_channels=64, factorization='tucker', rank=0.42)
 model = model.to(device)
 
@@ -126,8 +127,10 @@ model = model.cuda()
 
 test_samples = test_loaders[resolution].dataset
 
-fig = plt.figure(figsize=(7, 7))
 for index in range(3):
+    
+    fig = plt.figure(figsize=(21, 7))
+    
     data = test_samples[index]
     data = data_processor.preprocess(data, batched=False)
     # Input x
@@ -137,30 +140,33 @@ for index in range(3):
     # Model prediction
     out = model(x.unsqueeze(0))
 
-    ax = fig.add_subplot(3, 3, index*3 + 1)
-    ax.imshow(x[0].cpu())
-    if index == 0: 
-        ax.set_title('Input x')
-    plt.xticks([], [])
-    plt.yticks([], [])
+    print(f'index {index}, yshape {y.shape}, {y[0,0].shape} out shape {out.shape}')
 
-    ax = fig.add_subplot(3, 3, index*3 + 2)
-    ax.imshow(y.cpu().squeeze())
-    if index == 0: 
-        ax.set_title('Ground-truth y')
-    plt.xticks([], [])
-    plt.yticks([], [])
+    for t_index in range(T_in):
+        ax = fig.add_subplot(3, T_in, t_index + 1)
+        ax.imshow(x[0,t_index].cpu())
+        ax.set_title('Input vorticity t='+str(t_index))
+        plt.xticks([], [])
+        plt.yticks([], [])
 
-    ax = fig.add_subplot(3, 3, index*3 + 3)
-    ax.imshow(out.cpu().squeeze().detach().numpy())
-    if index == 0: 
-        ax.set_title('Model prediction')
-    plt.xticks([], [])
-    plt.yticks([], [])
+    for t_index in range(T):
+        ax = fig.add_subplot(3, T, t_index + T_in + 1)
+        ax.imshow(y[0,0,t_index].cpu().squeeze())
+        ax.set_title('Output vorticity t='+str(t_index+T_in))
+        plt.xticks([], [])
+        plt.yticks([], [])
 
-fig.suptitle('Inputs, ground-truth output and prediction.', y=0.98)
-plt.tight_layout()
-#fig.show()
-fig.savefig('dpsl_3d.png')
+    for t_index in range(T):
+        ax = fig.add_subplot(3, T, t_index + T_in + T + 1)
+        ax.imshow(out[0,0,t_index].cpu().squeeze().detach().numpy())
+        ax.set_title('Predicted vorticity t='+str(t_index+T_in))
+        plt.xticks([], [])
+        plt.yticks([], [])
+
+    fig.suptitle('Inputs, ground-truth output and prediction for DPSL with 3D FNO', y=0.98)
+    fig.subplots_adjust(wspace=0.0)
+    plt.tight_layout()
+    #fig.show()
+    fig.savefig('dpsl_3d_'+str(index)+'.png')
 
 print('\n### INFERENCE FINISHED ###\n')

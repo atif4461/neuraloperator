@@ -18,7 +18,7 @@ def load_dpsl_3d(
     encode_input=False,
     encode_output=True,
     encoding="channel-wise",
-    channel_dim=2,
+    channel_dim=1,
 ):
     """Loads a small Darcy-Flow dataset
 

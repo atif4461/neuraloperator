@@ -12,5 +12,5 @@ export PYTHONPATH=/work/atif/neuraloperator/
 
 # Error calculation
 https://arxiv.org/html/2402.17185v1
-
+https://arxiv.org/html/2401.08886v1
 
