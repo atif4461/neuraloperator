@@ -185,6 +185,8 @@ class Trainer:
                         if torch.is_tensor(v)
                     }
 
+                #print(f'sample shape is {sample["x"].shape}')    
+
                 n_samples += sample["y"].shape[0]
 
                 if self.amp_autocast:
