@@ -7,7 +7,7 @@ from .dict_dataset import DictDataset
 from .output_encoder import UnitGaussianNormalizer, DictTransform
 from .tensor_dataset import TensorDataset, GeneralTensorDataset
 from .data_transforms import DataProcessor, DefaultDataProcessor, IncrementalDataProcessor  
-from .transforms import MGPTensorDataset, PositionalEmbedding2D, Transform
+from .transforms import MGPTensorDataset, PositionalEmbedding2D, Transform, Normalizer
 
 # only import MeshDataModule if open3d is built locally
 from importlib.util import find_spec

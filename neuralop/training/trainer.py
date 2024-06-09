@@ -2,6 +2,7 @@ import torch
 from torch.cuda import amp
 from timeit import default_timer
 import pathlib
+import sys
 
 from .callbacks import PipelineCallback
 import neuralop.mpu.comm as comm
@@ -218,7 +219,8 @@ class Trainer:
                     loss += regularizer.loss
                 
                 # added by atif following https://forums.fast.ai/t/pytorch-gradient-runtimeerror/99118
-                loss = loss.sum()
+                loss = loss.mean()
+                #loss = loss.sum()
 
                 loss.backward()
                 del out
@@ -245,6 +247,7 @@ class Trainer:
             avg_loss /= n_samples
 
             print(f"train_err = {train_err} avg_loss = {avg_loss} \n")
+            sys.stdout.flush()
 
             if epoch % self.log_test_interval == 0:
                 if self.callbacks:

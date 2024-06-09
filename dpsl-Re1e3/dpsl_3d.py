@@ -260,8 +260,6 @@ def load_dpsl_3d_channels_pt(
     ftrain = h5py.File(TRAIN_PATH, 'r')
     x_train = torch.tensor(ftrain['vortz'][0:n_train,0:T_in,:,:]).type(torch.float32).clone()
     y_train = torch.tensor(ftrain['vortz'][0:n_train,T_in:T_in+T,:,:]).type(torch.float32).clone()
-    #x_train = torch.tensor(ftrain['vortz'][0:n_train,0:T_in,:,:]).unsqueeze(2).type(torch.float32).clone()
-    #y_train = torch.tensor(ftrain['vortz'][0:n_train,T_in:T_in+T,:,:]).unsqueeze(2).type(torch.float32).clone()
     # unsqueeze uplifts torch.Size([1000, 16, 16]) to torch.Size([1000, 1, 16, 16])
     print(f"\n### x_train shape {x_train.shape}")
 
@@ -272,8 +270,6 @@ def load_dpsl_3d_channels_pt(
 
     x_test  = torch.tensor(ftrain['vortz'][-n_test:,0:T_in,:,:]).type(torch.float32).clone()
     y_test  = torch.tensor(ftrain['vortz'][-n_test:,T_in:T_in+T,:,:]).type(torch.float32).clone()
-    #x_test  = torch.tensor(ftrain['vortz'][-n_test:,0:T_in,:,:]).unsqueeze(2).type(torch.float32).clone()
-    #y_test  = torch.tensor(ftrain['vortz'][-n_test:,T_in:T_in+T,:,:]).unsqueeze(2).type(torch.float32).clone()
  
     if encode_input:
         if encoding == "channel-wise":
